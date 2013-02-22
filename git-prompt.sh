@@ -7,7 +7,7 @@
 
         unset dir_color rc_color user_id_color root_id_color init_vcs_color clean_vcs_color
         unset modified_vcs_color added_vcs_color addmoded_vcs_color untracked_vcs_color op_vcs_color detached_vcs_color hex_vcs_color
-        unset rawhex_len
+        unset rawhex_len date_time
 
         conf=git-prompt.conf;                   [[ -r $conf ]]  && . $conf
         conf=/etc/git-prompt.conf;              [[ -r $conf ]]  && . $conf
@@ -25,6 +25,9 @@
         virtualenv_module=${virtualenv_module:-on}
         error_bell=${error_bell:-off}
         cwd_cmd=${cwd_cmd:-\\w}
+        date_time_order=${date_time_order:-off}
+        date_format=${date_format:-\\d}
+        time_format=${time_format:-\\t}
 
 
         #### dir, rc, root color
@@ -35,9 +38,12 @@
                 virtualenv_color=${virtualenv_color:-green}
                 user_id_color=${user_id_color:-blue}
                 root_id_color=${root_id_color:-magenta}
+                date_color=${date_color:-blue}
+                time_color=${time_color:-WHITE}
         else                                            #  only B/W
                 dir_color=${dir_color:-bw_bold}
                 rc_color=${rc_color:-bw_bold}
+                time_color=${time_color:-bw_bold}
         fi
         unset cols
 
@@ -287,6 +293,8 @@ set_shell_label() {
         virtualenv_color=${!virtualenv_color}
         user_id_color=${!user_id_color}
         root_id_color=${!root_id_color}
+        date_color=${!date_color}
+        time_color=${!time_color}
 
         ########################################################### HOST
         ### we don't display home host/domain  $SSH_* set by SSHD or keychain
@@ -345,6 +353,25 @@ set_shell_label() {
         else
                 color_who_where=''
         fi
+
+###################################################### Date/Time
+	case $date_time_order in
+		dt | "date-time" | "date time")
+			date_time="${colors_reset}[${date_color}${date_format}${colors_reset} ${time_color}${time_format}${colors_reset}] "
+			;;
+		td | "time-date" | "time date")
+			date_time="${colors_reset}[${time_color}${time_format}${colors_reset} ${date_color}${date_format}${colors_reset}] "
+			;;
+		d | date)
+			date_time="${colors_reset}[${date_color}${date_format}${colors_reset}] "
+			;;
+		t | "time")
+			date_time="${colors_reset}[${time_color}${time_format}${colors_reset}] "
+			;;
+		*)
+			date_time=''
+			;;
+	esac
 
 
 parse_svn_status() {
@@ -705,7 +732,7 @@ prompt_command_function() {
         # else eval cwd_cmd,  cwd should have path after exection
         eval "${cwd_cmd/\\/cwd=\\\\}"
 
-        PS1="$colors_reset$rc$head_local$color_who_where$dir_color$cwd$tail_local$dir_color$prompt_char $colors_reset"
+        PS1="$colors_reset$rc$head_local$date_time$color_who_where$dir_color$cwd$tail_local$dir_color$prompt_char $colors_reset"
 
         unset head_local tail_local pwd
  }
