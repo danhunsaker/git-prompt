@@ -1,3 +1,14 @@
+		# cannot be started directly; must be called from `.` or `source` builtin
+		if [[ $0 != *bash ]]; then
+			cat <<-"EOF" >&2
+				This script *MUST* be called using the bash builtin `source`,
+				or its shorter counterpart, `.`, in order to function properly.
+				It cannot be started directly.
+				
+			EOF
+			exit
+		fi
+		
         # don't set prompt if this is not interactive shell
         [[ $- != *i* ]]  &&  return
 
@@ -712,7 +723,7 @@ prompt_command_function() {
 		parse_virtualenv_status
         parse_vcs_status
         [[ $rvm_module = "on" ]] && type rvm >&/dev/null && parse_rvm_status
-        [[ $clock_module = "on" ]] && local clock="$clock_color$(date +$clock_format) "
+        [[ $clock_module = "on" ]] && local clock="$clock_color$(date "+$clock_format") "
 
 
 
