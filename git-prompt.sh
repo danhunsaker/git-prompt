@@ -1,5 +1,5 @@
         # don't set prompt if this is not interactive shell
-        [[ $- != *i* ]]  &&  return
+        [[ $- != *i* && "$*" != *-f* ]]  &&  return
 
 ###################################################################   CONFIG
 
